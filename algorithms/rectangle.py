@@ -1,6 +1,7 @@
 # Python program to find all 
 # rectangles filled with 0 
 from copy import copy, deepcopy
+import array
 
 
 def findend(i,j,a,output,index): 
@@ -108,7 +109,7 @@ def fill_coord(M, len1, wid1):
 		if len1 <= maxLen:
 			if wid1 <= maxWid:
 				print("Will fit in warehouse.")
-				if isHorizontal:
+				if isHorizontal or (maxLen >= wid1 and maxWid >= len1):
 					print("facing vertically")
 					for j in range(len1):
 						for k in range(wid1):
@@ -136,27 +137,37 @@ def fill_coord(M, len1, wid1):
 
 			else:
 				print("Does not fit")
+				return curr
 		else:
 			print("Does not fit")
+			return curr
 		
 
 # driver code 
-tests = [ 
+# tests = [ 
 
-			[1, 1, 1, 1, 1, 1, 1], 
-			[1, 1, 1, 1, 1, 1, 1], 
-			[1, 1, 1, 0, 0, 1, 1], 
-			[1, 0, 0, 0, 0, 1, 1], 
-			[1, 0, 0, 0, 0, 1, 1], 
-			[1, 0, 0, 0, 0, 1, 0], 
-			[1, 1, 1, 0, 0, 1, 1], 
-			[1, 1, 1, 1, 1, 1, 1] 
+# 			[1, 1, 1, 1, 1, 1, 1], 
+# 			[1, 1, 1, 1, 1, 1, 1], 
+# 			[1, 1, 1, 0, 0, 1, 1], 
+# 			[1, 0, 0, 0, 0, 1, 1], 
+# 			[1, 0, 0, 0, 0, 1, 1], 
+# 			[1, 0, 0, 0, 0, 1, 0], 
+# 			[1, 1, 1, 0, 0, 1, 1], 
+# 			[1, 1, 1, 1, 1, 1, 1] 
 
-		] 
+# 		] 
+
+rows = 10
+cols = 10
+
+tests = [ [ 0 for i in range(rows) ] for j in range(cols) ]
 
 tests = fill_coord(tests, 3, 2)
 tests = fill_coord(tests, 3, 2)
 tests = fill_coord(tests, 1, 1)
+
+for i in range(20):
+	tests = fill_coord(tests, 3, 2)
 
 
 # get_rectangle_coordinates(tests) 
