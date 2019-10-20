@@ -1,5 +1,7 @@
 # Python program to find all 
 # rectangles filled with 0 
+from copy import copy, deepcopy
+
 
 def findend(i,j,a,output,index): 
 	x = len(a) 
@@ -50,7 +52,6 @@ def findend(i,j,a,output,index):
 
 
 def get_rectangle_coordinates(a): 
-
 	# retrieving the column size of array 
 	size_of_array = len(a) 
 
@@ -75,8 +76,69 @@ def get_rectangle_coordinates(a):
 				index = index + 1		
 				findend(i, j, a, output, index) 
 
-
 	print (output) 
+	return output
+
+
+def fill_coord(M, len1, wid1):
+	print("-----------------------------------------")
+	curr = deepcopy(M)
+	coords = get_rectangle_coordinates(M)
+	poss = len(coords)
+	if len1 < wid1:
+		tmp = len1
+		len1 = wid1
+		wid1 = tmp
+	print("ADDING: Len: ", len1, " Wid: ", wid1)
+	for i in range(poss):
+		maxLen = coords[i][2]+1 - coords[i][0]
+		maxWid = coords[i][3]+1 - coords[i][1]
+		isHorizontal = True
+		if maxLen < maxWid:
+			tmp = maxLen
+			maxLen = maxWid
+			maxWid = tmp
+			isHorizontal = False
+		print(maxLen, " - ", maxWid)
+		print("\n Before storing:")
+		for j in range(len(M)):
+			for k in range(len(M[0])):
+				print(curr[j][k], end=" ")
+			print("")
+		if len1 <= maxLen:
+			if wid1 <= maxWid:
+				print("Will fit in warehouse.")
+				if isHorizontal:
+					print("facing vertically")
+					for j in range(len1):
+						for k in range(wid1):
+							curr[j+coords[i][0]][k+coords[i][1]] = 1
+
+					print("\n After storing:")
+					for j in range(len(M)):
+						for k in range(len(M[0])):
+							print(curr[j][k], end=" ")
+						print("")
+					return curr
+
+				else:
+					print("facing horizontally")
+					# TODO: need to fix this
+					for j in range(len1):
+						for k in range(wid1):
+							curr[k+coords[i][0]][j+coords[i][1]] = 1
+
+					for j in range(len(M)):
+						for k in range(len(M[0])):
+							print(curr[j][k], end=" ")
+						print("")
+					return curr
+
+			else:
+				print("Does not fit")
+		else:
+			print("Does not fit")
+		
 
 # driver code 
 tests = [ 
@@ -92,5 +154,9 @@ tests = [
 
 		] 
 
+tests = fill_coord(tests, 3, 2)
+tests = fill_coord(tests, 3, 2)
+tests = fill_coord(tests, 1, 1)
 
-get_rectangle_coordinates(tests) 
+
+# get_rectangle_coordinates(tests) 
