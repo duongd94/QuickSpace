@@ -2,7 +2,7 @@
 # rectangles filled with 0 
 from copy import copy, deepcopy
 import array
-
+import random
 
 def findend(i,j,a,output,index): 
 	x = len(a) 
@@ -167,7 +167,7 @@ tests = fill_coord(tests, 3, 2)
 tests = fill_coord(tests, 1, 1)
 
 for i in range(20):
-	tests = fill_coord(tests, 3, 2)
+	tests = fill_coord(tests, random.randint(1,5), random.randint(1,5))
 
 
 # get_rectangle_coordinates(tests) 
