@@ -1,10 +1,3 @@
-# from rectpack import newPacker
-
-# rectangles = [(10, 3,1), (4, 6,2), (3, 3,3),(7, 7,4), (10, 5,5), (3, 3,6), (2, 2, 7)]
-# bins = [(30, 30)]
-
-# packer = newPacker()
-
 # # Add the rectangles to packing queue
 # for r in rectangles:
 # 	packer.add_rect(*r)
@@ -14,7 +7,7 @@
 # 	packer.add_bin(*b)
 
 # # Start packing
-# packer.pack()
+# # packer.pack()
 
 # # Full rectangle list
 # all_rects = packer.rect_list()
@@ -29,6 +22,7 @@
 # 			disRow = i[2]
 # 			disCol = i[1]
 # 			tests[disRow+k][disCol+j] = i[5]
+# 			# tests[disRow+k][disCol+j] = 1
 
 # for i in range(30):
 # 	for j in range(30):
@@ -38,7 +32,7 @@
 # 			print(" ", end=", ")
 # 	print("")
 	
-# # print(tests)
+# print("hello")
 
 # rectangles = [(10, 3, 9)]
 
@@ -65,6 +59,20 @@
 # 	print("")
 
 
+
+# curr = deepcopy(tests)
+# coords = get_rectangle_coordinates(curr)
+# # print(coords)
+# print(curr)
+
+
+
+
+
+
+
+
+
 # # b - Bin index
 # # x - Rectangle bottom-left corner x coordinate
 # # y - Rectangle bottom-left corner y coordinate
@@ -72,7 +80,7 @@
 # # h - Rectangle height
 # # rid - User asigned rectangle id or None
 
-# greedypacker.BINSET
-BINSET = binpack.BinPack(bin_size=(4,8))
-BINSET.insert((2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2), heuristic='best_fit')
-BINSET.print_stats()
+# # greedypacker.BINSET
+# BINSET = binpack.BinPack(bin_size=(4,8))
+# BINSET.insert((2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2), heuristic='best_fit')
+# BINSET.print_stats()
