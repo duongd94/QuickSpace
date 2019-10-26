@@ -76,6 +76,7 @@ def get_rectangle_coordinates(a):
 				# last position 
 				index = index + 1		
 				findend(i, j, a, output, index) 
+				
 
 	print (output) 
 	return output
@@ -167,7 +168,7 @@ tests = fill_coord(tests, 3, 2)
 tests = fill_coord(tests, 1, 1)
 
 for i in range(20):
-	tests = fill_coord(tests, random.randint(1,5), random.randint(1,5))
+	tests = fill_coord(tests, random.randint(1,8), random.randint(1,8))
 
 
 # get_rectangle_coordinates(tests) 
