@@ -1,58 +1,122 @@
 from datetime import date
 import random
+import rectpack
+import rectpack.packer as packer
+from copy import copy, deepcopy
 
 
 class WareHouse:
-    def __init__(self, length, width, total_space, used_space, remain_space):
-        self.list = {}
-        self.length = length
+    def __init__(self, height, width):
         self.width = width
-        self.total_space = total_space
-        self.used_space = used_space
-        self.remain_space = remain_space
-        self.item = Item()
+        self.height = height
+        self.items = []
+        self.p = packer.newPacker(mode=packer.PackingMode.Online, 
+            bin_algo=packer.PackingBin.BFF)
+        self.p.add_bin(self.width, self.height)
+    
+    def totalSpace(self):
+        return self.width*self.height
 
-    def get_total_space(self):
-        self.total_space = self.width * self.length
-        return self.total_space
+    def usedSpace(self):
+        space = 0
+        for item in self.items:
+            space += item.width * item.height
+        return space
 
-    def get_used_space(self):
-        for i in self.list:
-            self.used_space += self.list[i].item.get_items_size()
+    def remainingSpace(self):
+        return self.totalSpace() - self.usedSpace()
+        
 
-    def get_remaining_space(self):
-        self.remain_space = self.total_space.get_total_space() - self.get_used_space()
-        return self.remain_space
 
+    def addItem(self, barcode, name, width,
+                height, amount, price, owner_name ):
+        print("trying to add item width: ", width, ", height: ", height, ", Barcode: ", barcode)
+        fits = self.p.add_rect(width, height, barcode)
+        if not fits:
+            return False
+        else:
+            locations = self.itemLocation(barcode)
+            self.items.append(Item(barcode, name, width,
+                height, amount, price, owner_name, locations))
+            return True
+
+    def itemLocation(self, barcode):
+        for item in self.p.rect_list():
+            if barcode in item:
+                return item
+        return False
+
+    def displayMatrix(self):
+        all_rects = self.p.rect_list()
+        tests = [ [ 0 for i in range(self.width) ] for j in range(self.height) ]
+        for i in all_rects:
+            for j in range(i[3]):# width
+                for k in range(i[4]):# height
+                    disRow = i[2]
+                    disCol = i[1]
+                    tests[disRow+k][disCol+j] = i[5]
+                    # tests[disCol+j][disRow+k] = 1
+        for i in range(self.height):
+            for j in range(self.width):
+                if not tests[i][j] == 0:
+                    print(tests[i][j], end=", ")
+                else:
+                    print(" ", end=", ")
+            print("")
+
+    def checkoutItem(self, barcode):
+        for item in self.items:
+            if barcode == item.barcode:
+                item.checkout()
+
+    def checkinItem(self, barcode):
+        for item in self.items:
+            if barcode == item.barcode:
+                item.checkin()
 
 class Item:
-    def __init__(self, item_num, item_name, item_type, item_width,
-                 item_length, item_size, amount, date_in, date_out, price, owner_name):
-        self.item_num = item_num
-        self.item_name = item_name
-        self.item_type = item_type
-        self.item_width = item_width
-        self.item_length = item_length
+    def __init__(self, barcode, name, width,
+                height, amount, price, owner_name, locations):
+        self.barcode = barcode
+        self.name = name
+        self.width = width
+        self.height = height
         self.amount = amount
-        self.date_in = date_in
-        self.date_out = date_out
+        self.date_in = date.today()
+        self.date_out = -1
         self.price = price
         self.owner_name = owner_name
-        self.today = date.today()
-        self.item_size = item_size
+        self.item_locations = locations
 
-    def item_to_add(self):
-        self.item_num = random.randint(1, 10001)  # need to be format to 5digits
-        self.item_name = input()
-        self.item_type = input()
-        self.item_width = int(input())
-        self.item_length = int(input())
-        self.amount = input()
-        self.date_in = self.today.strftime("%m/%d/%Y")
-        self.date_out = input()
-        self.price = input()
-        self.owner_name = input()
+    def checkout(self):
+        self.date_out = date.today()
+    def checkin(self):
+        self.date_in = date.today()
 
-    def get_items_size(self):
-        self.item_size = self.item_width * self.item_length
-        return self.item_size
+# make a warehouse, warehousePacker(width, height)
+x = WareHouse(50, 30)                    
+
+# addItem(width, height, barcode)
+# fits                                  #(barcode, item_name, width, height, amount,price , owner_name)
+print("Was the item placed?: ", x.addItem('d'    , "Disc"   , 3    , 5     , 1     , 20.11, "Jonathan" ))
+print("Was the item placed?: ", x.addItem( 2, "Another Disc", 3, 50, 1, 49.99, "JonathanB" ))
+print("Was the item placed?: ", x.addItem(3    , "Mouse", 3, 5, 1, 29.99, "Jonathan"))
+print("Was the item placed?: ", x.addItem(4    , "Keyboard", 3, 5, 1, 39.99, "Jonathan"))
+
+# Item does not fit 
+print("Was the item placed?: ", x.addItem(9, "", 30, 50,1, 99999, "people"))
+
+# checking out item with barcode 'd'
+x.checkoutItem('d')
+print(x.items[0].date_out)
+
+# checking in item with barcode 'd'
+x.checkinItem('d')
+print(x.items[0].date_in)
+
+# get the totalspace, usedspace, and remaining space of warehouse
+print(x.totalSpace(), x.usedSpace(), x.remainingSpace())
+
+# get location of item in warehouse, using barcode
+print("Location of item with barcode 'd': ",x.itemLocation('d'))
+print("Location of item with barcode 9: ",x.itemLocation(9))
