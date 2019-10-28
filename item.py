@@ -117,6 +117,12 @@ print(x.items[0].date_in)
 # get the totalspace, usedspace, and remaining space of warehouse
 print(x.totalSpace(), x.usedSpace(), x.remainingSpace())
 
-# get location of item in warehouse, using barcode
+# get location of an item in warehouse, using barcode
 print("Location of item with barcode 'd': ",x.itemLocation('d'))
 print("Location of item with barcode 9: ",x.itemLocation(9))
+
+# gives the list of all item rectangles
+print(x.p.rect_list())
+
+# display warehouse
+x.displayMatrix()
