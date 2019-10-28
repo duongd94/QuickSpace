@@ -1,8 +1,8 @@
 from datetime import date
 import random
-import rectpack
-import rectpack.packer as packer
 from copy import copy, deepcopy
+import binaryTreeInsert
+
 
 
 class WareHouse:
@@ -10,9 +10,7 @@ class WareHouse:
         self.width = width
         self.height = height
         self.items = []
-        self.p = packer.newPacker(mode=packer.PackingMode.Online, 
-            bin_algo=packer.PackingBin.BFF)
-        self.p.add_bin(self.width, self.height)
+        self.p = binaryTreeInsert.warehouseTree(width, height)
     
     def totalSpace(self):
         return self.width*self.height
@@ -31,7 +29,7 @@ class WareHouse:
     def addItem(self, barcode, name, width,
                 height, amount, price, owner_name ):
         print("trying to add item width: ", width, ", height: ", height, ", Barcode: ", barcode)
-        fits = self.p.add_rect(width, height, barcode)
+        fits = self.p.addItem(width, height, barcode)
         if not fits:
             return False
         else:
@@ -41,28 +39,27 @@ class WareHouse:
             return True
 
     def itemLocation(self, barcode):
-        for item in self.p.rect_list():
-            if barcode in item:
-                return item
-        return False
+        return self.p.itemLoc(barcode)
+
 
     def displayMatrix(self):
-        all_rects = self.p.rect_list()
-        tests = [ [ 0 for i in range(self.width) ] for j in range(self.height) ]
-        for i in all_rects:
-            for j in range(i[3]):# width
-                for k in range(i[4]):# height
-                    disRow = i[2]
-                    disCol = i[1]
-                    tests[disRow+k][disCol+j] = i[5]
-                    # tests[disCol+j][disRow+k] = 1
-        for i in range(self.height):
-            for j in range(self.width):
-                if not tests[i][j] == 0:
-                    print(tests[i][j], end=", ")
-                else:
-                    print(" ", end=", ")
-            print("")
+        self.p.printWarehouseMatrix()
+        # all_rects = self.p.rect_list()
+        # tests = [ [ 0 for i in range(self.width) ] for j in range(self.height) ]
+        # for i in all_rects:
+        #     for j in range(i[3]):# width
+        #         for k in range(i[4]):# height
+        #             disRow = i[2]
+        #             disCol = i[1]
+        #             tests[disRow+k][disCol+j] = i[5]
+        #             # tests[disCol+j][disRow+k] = 1
+        # for i in range(self.height):
+        #     for j in range(self.width):
+        #         if not tests[i][j] == 0:
+        #             print(tests[i][j], end=", ")
+        #         else:
+        #             print(" ", end=", ")
+        #     print("")
 
     def checkoutItem(self, barcode):
         for item in self.items:
@@ -99,7 +96,7 @@ x = WareHouse(50, 30)
 # addItem(width, height, barcode)
 # fits                                  #(barcode, item_name, width, height, amount,price , owner_name)
 print("Was the item placed?: ", x.addItem('d'    , "Disc"   , 3    , 5     , 1     , 20.11, "Jonathan" ))
-print("Was the item placed?: ", x.addItem( 2, "Another Disc", 3, 50, 1, 49.99, "JonathanB" ))
+print("Was the item placed?: ", x.addItem( 2, "Another Disc", 3, 30, 1, 49.99, "JonathanB" ))
 print("Was the item placed?: ", x.addItem(3    , "Mouse", 3, 5, 1, 29.99, "Jonathan"))
 print("Was the item placed?: ", x.addItem(4    , "Keyboard", 3, 5, 1, 39.99, "Jonathan"))
 
@@ -119,10 +116,24 @@ print(x.totalSpace(), x.usedSpace(), x.remainingSpace())
 
 # get location of an item in warehouse, using barcode
 print("Location of item with barcode 'd': ",x.itemLocation('d'))
+print("Location of item with barcode 2: ",x.itemLocation(2))
+print("Location of item with barcode 4: ",x.itemLocation(4))
 print("Location of item with barcode 9: ",x.itemLocation(9))
 
 # gives the list of all item rectangles
-print(x.p.rect_list())
+# print(x.p.rect_list())
 
 # display warehouse
 x.displayMatrix()
+
+
+# x = binaryTreeInsert.warehouseTree(25, 50)
+# x.addItem(10, 20, 1)
+# x.printNodes()
+# x.addItem(5, 5, 2)
+# # x.addItem(5, 5, 3)
+# x.addItem(5, 5, 4)
+# x.addItem(20, 200, 9)
+# # x.addItem(20, 30, 5)
+# x.addItem(30, 5, 6)
+# x.printWarehouseMatrix()
