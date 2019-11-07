@@ -109,7 +109,7 @@ class warehouseTree:
         rightFound = False
         leftFound = False
         if temp.barcode == barcode:
-            return (temp.x,temp.y,temp.width+temp.x-1, temp.height+temp.y-1,   temp.barcode)
+            return (temp.x,temp.y,temp.width+temp.x, temp.height+temp.y,   temp.barcode)
         if temp.right:
             rightFound = self.findCoords(barcode, temp.right, x+temp.width, y)
         if temp.left:
