@@ -15,8 +15,8 @@ def run_gui():
     app = warehouseApp()
     app.mainloop()
 
-ob=[]
 wh=[]
+
 
 
 class warehouseApp(tk.Tk):
@@ -30,7 +30,7 @@ class warehouseApp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (welcomePage, warehouseInfo, menu, addItem, addItemSuccess, addItemFail, viewWarehouse):
+        for F in (welcomePage, warehouseInfo, menu, addItem, addItemSuccess, addItemFail, addItemFail1, viewWarehouse):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -193,7 +193,7 @@ class menu(tk.Frame):
         
         def view1():
             #warehouseInfo.warehouse.displayMatrix()
-  
+    
             master = tk.Tk()
             canvas_width = wh[0]
             canvas_height = wh[1]
@@ -201,18 +201,13 @@ class menu(tk.Frame):
             print("Used Space :",warehouseInfo.warehouse.usedSpace())
             print("Remaning Space :",warehouseInfo.warehouse.remainingSpace())
             w = Canvas(master, 
-                       width=canvas_width,
-                       height=canvas_height,bg='red')
+                        width=canvas_width,
+                        height=canvas_height,bg='red')
             controller.show_frame("viewWarehouse")
 
-            
-            for i in ob:
-                if(warehouseInfo.warehouse.itemLocation(i)):
-                    print("can fit",i)
-                    loc=list(warehouseInfo.warehouse.itemLocation(i))
-                    w.create_rectangle(loc[0], loc[1], loc[2], loc[3], fill="blue")
-                else:
-                    print("cannot fit",i)
+            for item in warehouseInfo.warehouse.items:
+                loc=list(warehouseInfo.warehouse.itemLocation(item.barcode))
+                w.create_rectangle(loc[0], loc[1], loc[2], loc[3], fill="blue")
             w.pack()
 
         self.menuLabel = tk.Label(self)
@@ -286,15 +281,23 @@ class addItem(tk.Frame):
         controller.configure(highlightcolor="black")
         
         def additem1():
-            controller.show_frame("addItemSuccess")
+            
 
             ilength=int(float(self.Entry1.get()))
             iwidth=int(float(self.Entry2.get()))
-            iname=int(float((self.nameEntry.get())))
-            ob.append(iname)
+            iname=self.nameEntry.get()
             #(barcode, item_name, width, height, amount,price , owner_name)
             #warehouseInfo.warehouse.addItem(iname, "iname", iwidth, ilength, 5 ,5,"owner_name")
-            warehouseInfo.warehouse.addItem(iname, "iname", iwidth, ilength, 5 ,5, "owner_name")
+            # if iname in ob:
+                # print("failed cause name already exists")
+                # controller.show_frame("addItemFail1")
+            if warehouseInfo.warehouse.addItem(iname, iwidth, ilength):
+                print("item added successfully")
+                # ob.append(iname)
+                controller.show_frame("addItemSuccess")
+            else:
+                print("failed cause no fit")
+                controller.show_frame("addItemFail")
             
 
         self.addLabel = tk.Label(self)
@@ -459,7 +462,7 @@ class addItemFail(tk.Frame):
         _compcolor = '#d9d9d9'  # X11 color: 'gray85'
         _ana1color = '#d9d9d9'  # X11 color: 'gray85'
         _ana2color = '#ececec'  # Closest X11 color: 'gray92'
-
+        
         controller.geometry("480x600+524+369")
         controller.title("Quick-Space")
         controller.configure(background="#d9d9d9")
@@ -481,6 +484,7 @@ class addItemFail(tk.Frame):
         self.remainingSpaceLabel.configure(highlightbackground="#d9d9d9")
         self.remainingSpaceLabel.configure(highlightcolor="black")
         self.remainingSpaceLabel.configure(text='''There is only [x] sq. ft.''')
+        
 
         self.leftLabel = tk.Label(self)
         self.leftLabel.place(relx=0.021, rely=0.35, height=51, width=453)
@@ -490,13 +494,15 @@ class addItemFail(tk.Frame):
         self.leftLabel.configure(highlightcolor="black")
         self.leftLabel.configure(text='''left available in the warehouse.''')
 
-        self.tryLabel = tk.Label(self)
-        self.tryLabel.place(relx=0.104, rely=0.45, height=51, width=384)
-        self.tryLabel.configure(font="-family {Segoe UI} -size 20")
-        self.tryLabel.configure(foreground="#000000")
-        self.tryLabel.configure(highlightbackground="#d9d9d9")
-        self.tryLabel.configure(highlightcolor="black")
-        self.tryLabel.configure(text='''Try removing an item first.''')
+
+    # no longer supporting remove item
+        # self.tryLabel = tk.Label(self)
+        # self.tryLabel.place(relx=0.104, rely=0.45, height=51, width=384)
+        # self.tryLabel.configure(font="-family {Segoe UI} -size 20")
+        # self.tryLabel.configure(foreground="#000000")
+        # self.tryLabel.configure(highlightbackground="#d9d9d9")
+        # self.tryLabel.configure(highlightcolor="black")
+        # self.tryLabel.configure(text='''Try removing an item first.''')
 
         self.okButton = tk.Button(self)
         self.okButton.place(relx=0.417, rely=0.65, height=52, width=80)
@@ -512,6 +518,69 @@ class addItemFail(tk.Frame):
         self.okButton.configure(text='''OK''')
         self.okButton.configure(command=lambda: controller.show_frame("menu"))
 
+class addItemFail1(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
+        _fgcolor = '#000000'  # X11 color: 'black'
+        _compcolor = '#d9d9d9'  # X11 color: 'gray85'
+        _ana1color = '#d9d9d9'  # X11 color: 'gray85'
+        _ana2color = '#ececec'  # Closest X11 color: 'gray92'
+        
+        controller.geometry("480x600+524+369")
+        controller.title("Quick-Space")
+        controller.configure(background="#d9d9d9")
+        controller.configure(highlightbackground="#d9d9d9")
+        controller.configure(highlightcolor="black")
+
+        self.sorryLabel = tk.Label(self)
+        self.sorryLabel.place(relx=0.375, rely=0.117, height=60, width=108)
+        self.sorryLabel.configure(font="-family {Segoe UI} -size 24")
+        self.sorryLabel.configure(foreground="#000000")
+        self.sorryLabel.configure(highlightbackground="#d9d9d9")
+        self.sorryLabel.configure(highlightcolor="black")
+        self.sorryLabel.configure(text='''Sorry!''')
+
+        self.remainingSpaceLabel = tk.Label(self)
+        self.remainingSpaceLabel.place(relx=0.146, rely=0.25, height=51, width=319)
+        self.remainingSpaceLabel.configure(font="-family {Segoe UI} -size 20")
+        self.remainingSpaceLabel.configure(foreground="#000000")
+        self.remainingSpaceLabel.configure(highlightbackground="#d9d9d9")
+        self.remainingSpaceLabel.configure(highlightcolor="black")
+        self.remainingSpaceLabel.configure(text='''Name already exists!''')
+        
+
+        self.leftLabel = tk.Label(self)
+        self.leftLabel.place(relx=0.021, rely=0.35, height=51, width=453)
+        self.leftLabel.configure(font="-family {Segoe UI} -size 20")
+        self.leftLabel.configure(foreground="#000000")
+        self.leftLabel.configure(highlightbackground="#d9d9d9")
+        self.leftLabel.configure(highlightcolor="black")
+        self.leftLabel.configure(text='''Please choose another.''')
+
+    # no longer supporting remove item
+        # self.tryLabel = tk.Label(self)
+        # self.tryLabel.place(relx=0.104, rely=0.45, height=51, width=384)
+        # self.tryLabel.configure(font="-family {Segoe UI} -size 20")
+        # self.tryLabel.configure(foreground="#000000")
+        # self.tryLabel.configure(highlightbackground="#d9d9d9")
+        # self.tryLabel.configure(highlightcolor="black")
+        # self.tryLabel.configure(text='''Try removing an item first.''')
+
+        self.okButton = tk.Button(self)
+        self.okButton.place(relx=0.417, rely=0.65, height=52, width=80)
+        self.okButton.configure(activebackground="#ececec")
+        self.okButton.configure(activeforeground="#000000")
+        self.okButton.configure(background="#d9d9d9")
+        self.okButton.configure(disabledforeground="#a3a3a3")
+        self.okButton.configure(font="-family {Segoe UI} -size 14")
+        self.okButton.configure(foreground="#000000")
+        self.okButton.configure(highlightbackground="#d9d9d9")
+        self.okButton.configure(highlightcolor="black")
+        self.okButton.configure(pady="0")
+        self.okButton.configure(text='''OK''')
+        self.okButton.configure(command=lambda: controller.show_frame("menu"))
 
 class viewWarehouse(tk.Frame):
     
@@ -533,7 +602,8 @@ class viewWarehouse(tk.Frame):
         controller.configure(highlightcolor="black")
         
         
-            
+
+        
 
         self.itemsLabel = tk.Label(self)
         self.itemsLabel.place(relx=0.167, rely=0.033, height=56, width=331)
@@ -544,7 +614,7 @@ class viewWarehouse(tk.Frame):
         self.itemsLabel.configure(text='''Items in Warehouse''')
 
         self.spaceUsedLabel = tk.Label(self)
-        self.spaceUsedLabel.place(relx=0.208, rely=0.383, height=37, width=279)
+        self.spaceUsedLabel.place(relx=0.208, rely=0.6, height=37, width=279)
         self.spaceUsedLabel.configure(font="-family {Segoe UI} -size 14")
         self.spaceUsedLabel.configure(foreground="#000000")
         self.spaceUsedLabel.configure(highlightbackground="#d9d9d9")
@@ -552,20 +622,20 @@ class viewWarehouse(tk.Frame):
         self.spaceUsedLabel.configure(text='''Total Space Used: [x] sq. ft.''')
 
         self.spaceRemainingLabel = tk.Label(self)
-        self.spaceRemainingLabel.place(relx=0.146, rely=0.45, height=37, width=337)
+        self.spaceRemainingLabel.place(relx=0.146, rely=0.7, height=37, width=337)
         self.spaceRemainingLabel.configure(font="-family {Segoe UI} -size 14")
         self.spaceRemainingLabel.configure(foreground="#000000")
         self.spaceRemainingLabel.configure(highlightbackground="#d9d9d9")
         self.spaceRemainingLabel.configure(highlightcolor="black")
         self.spaceRemainingLabel.configure(text='''Total Space Remaining: [x] sq. ft.''')
 
-        self.currentWarehouseLabel = tk.Label(self)
-        self.currentWarehouseLabel.place(relx=0.292, rely=0.517, height=37, width=202)
-        self.currentWarehouseLabel.configure(font="-family {Segoe UI} -size 14")
-        self.currentWarehouseLabel.configure(foreground="#000000")
-        self.currentWarehouseLabel.configure(highlightbackground="#d9d9d9")
-        self.currentWarehouseLabel.configure(highlightcolor="black")
-        self.currentWarehouseLabel.configure(text='''Current Warehouse''')
+        # self.currentWarehouseLabel = tk.Label(self)
+        # self.currentWarehouseLabel.place(relx=0.292, rely=0.7, height=37, width=202)
+        # self.currentWarehouseLabel.configure(font="-family {Segoe UI} -size 14")
+        # self.currentWarehouseLabel.configure(foreground="#000000")
+        # self.currentWarehouseLabel.configure(highlightbackground="#d9d9d9")
+        # self.currentWarehouseLabel.configure(highlightcolor="black")
+        # self.currentWarehouseLabel.configure(text='''Current Warehouse''')
 
         self.okButton = tk.Button(self)
         self.okButton.place(relx=0.438, rely=0.917, height=33, width=56)
@@ -580,14 +650,110 @@ class viewWarehouse(tk.Frame):
         self.okButton.configure(text='''OK''')
         self.okButton.configure(command=lambda: controller.show_frame("menu"))
 
-        # Might need to be edited in order to include 'headers' like "Name" "Size (l x w x h)" "Location (x,y)"
+        # Create a frame for the canvas and scrollbar(s).
+        frame2 = tk.Frame(self)
+        # frame2.grid(row=4, column=3, sticky=tk.NW)
+        frame2.place(x=30, y=90, height=200, width=450)
 
-        self.ListBox1 = tk.Listbox(self)
-        self.Scrollbar1 = tk.Scrollbar(self.ListBox1, orient="vertical")
-        self.Scrollbar1.pack(side="right", fill="y")
-        self.ListBox1.config(yscrollcommand=self.Scrollbar1.set)
-        self.ListBox1.place(x=60, y=90, height=124, width=365)
-        self.Scrollbar1.config(command=self.ListBox1.yview)
+        # Add a canvas in that frame.
+        canvas = tk.Canvas(frame2, bg="White")
+        canvas.grid(row=0, column=0)
+
+        # Create a vertical scrollbar linked to the canvas.
+        vsbar = tk.Scrollbar(frame2, orient=tk.VERTICAL, command=canvas.yview)
+        vsbar.grid(row=0, column=1, sticky=tk.NS)
+        canvas.configure(yscrollcommand=vsbar.set)
+
+        # Create a horizontal scrollbar linked to the canvas.
+        hsbar = tk.Scrollbar(frame2, orient=tk.HORIZONTAL, command=canvas.xview)
+        hsbar.grid(row=1, column=0, sticky=tk.EW)
+        canvas.configure(xscrollcommand=hsbar.set)
+
+        # Create a frame on the canvas to contain the buttons.
+        buttons_frame = tk.Frame(canvas, bg="#d9d9d9", bd=2)
+        button = tk.Button(buttons_frame, padx=40, pady=0, relief=tk.RIDGE,
+                                        text="Name")
+        button.grid(row=1, column=1, sticky='news')
+        button = tk.Button(buttons_frame, padx=5, pady=0, relief=tk.RIDGE,
+                                        text="Length")
+        button.grid(row=1, column=2, sticky='news')
+        button = tk.Button(buttons_frame, padx=5, pady=0, relief=tk.RIDGE,
+                                        text="Width")
+        button.grid(row=1, column=3, sticky='news')
+        button = tk.Button(buttons_frame, padx=15, pady=0, relief=tk.RIDGE,
+                                        text="X1, Y1")
+        button.grid(row=1, column=4, sticky='news')
+        button = tk.Button(buttons_frame, padx=15, pady=0, relief=tk.RIDGE,
+                                        text="X2, Y2")
+        button.grid(row=1, column=5, sticky='news')
+        button = tk.Button(buttons_frame, padx=15, pady=0, relief=tk.RIDGE,
+                                        text="Barcode")
+        button.grid(row=1, column=6, sticky='news')
+        canvas.create_window((0,0), window=buttons_frame, anchor=tk.NW)
+        buttons_frame.update_idletasks()  # Needed to make bbox info available.
+        bbox = canvas.bbox(tk.ALL)  # Get bounding box of canvas with Buttons.
+        # Define the scrollable region as entire canvas with only the desired
+        dw, dh = 400, 180
+        canvas.configure(scrollregion=bbox, width=dw, height=dh)
+
+        self.counter = 0
+        # refreshed the viewWarehouse. Maybe there is a better way to do this?
+        def refreshItems():
+            # updates the space remaining and used
+            spaceRemStr = "Total Space Remaining: "
+            spaceRemStr += str(warehouseInfo.warehouse.remainingSpace())
+            spaceRemStr += " sq. ft."
+            self.spaceRemainingLabel.configure(text=spaceRemStr)
+            spaceRemStr = "Total Space Used: "
+            spaceRemStr += str(warehouseInfo.warehouse.usedSpace())
+            spaceRemStr += " sq. ft."
+            self.spaceUsedLabel.configure(text=spaceRemStr)
+
+            # following updates the items
+            i = 2
+            # rows
+            for item in warehouseInfo.warehouse.items:
+                loc=list(warehouseInfo.warehouse.itemLocation(item.barcode))
+                button = tk.Button(buttons_frame, padx=0, pady=0, relief=tk.RIDGE,
+                                    text=item.name)
+                button.grid(row=i, column=1, sticky='news')
+                button = tk.Button(buttons_frame, padx=0, pady=0, relief=tk.RIDGE,
+                                    text=str(item.height))
+                button.grid(row=i, column=2, sticky='news')
+                button = tk.Button(buttons_frame, padx=0, pady=0, relief=tk.RIDGE,
+                                    text=str(item.width))
+                button.grid(row=i, column=3, sticky='news')
+                button = tk.Button(buttons_frame, padx=0, pady=0, relief=tk.RIDGE,
+                                    text="("+str(loc[0])+", "+str(loc[1])+")")
+                button.grid(row=i, column=4, sticky='news')
+                button = tk.Button(buttons_frame, padx=0, pady=0, relief=tk.RIDGE,
+                                    text="("+str(loc[2])+", "+str(loc[3])+")")
+                button.grid(row=i, column=5, sticky='news')
+                button = tk.Button(buttons_frame, padx=0, pady=0, relief=tk.RIDGE,
+                                    text=str(item.barcode))
+                button.grid(row=i, column=6, sticky='news')
+                i+=1
+            # Create canvas window to hold the buttons_frame.
+            canvas.create_window((0,0), window=buttons_frame, anchor=tk.NW)
+            buttons_frame.update_idletasks()  # Needed to make bbox info available.
+            bbox = canvas.bbox(tk.ALL)  # Get bounding box of canvas with Buttons.
+            # Define the scrollable region as entire canvas with only the desired
+            dw, dh = 400, 180
+            canvas.configure(scrollregion=bbox, width=dw, height=dh)
+
+        self.addButton = tk.Button(self)
+        self.addButton.place(relx=0.438, rely=0.53, height=22, width=70)
+        self.addButton.configure(activebackground="#ececec")
+        self.addButton.configure(activeforeground="#000000")
+        self.addButton.configure(background="#d9d9d9")
+        self.addButton.configure(disabledforeground="#a3a3a3")
+        self.addButton.configure(font="-family {Segoe UI} -size 12")
+        self.addButton.configure(foreground="#000000")
+        self.addButton.configure(highlightbackground="#d9d9d9")
+        self.addButton.configure(highlightcolor="black")
+        self.addButton.configure(pady="0")
+        self.addButton.configure(text='''Refresh''')
+        self.addButton.configure(command=refreshItems)
 
         # Draw warehouse diagram here
 

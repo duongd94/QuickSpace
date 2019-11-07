@@ -9,7 +9,7 @@ from datetime import date
 import random
 from copy import copy, deepcopy
 import binaryTreeInsert
-
+import random
 
 
 class WareHouse:
@@ -33,7 +33,10 @@ class WareHouse:
         
 
 
-    def addItem(self, barcode, name, width,height, amount, price, owner_name ):
+    def addItem(self, name, width,height, amount="", price="", owner_name="", barcode="" ):
+        barcode = random.randint(100000000, 999999999)
+        while self.barExists(barcode):
+            barcode = random.randint(100000000, 999999999)
         print("trying to add item width: ", width, ", height: ", height, ", Barcode: ", barcode)
         fits = self.p.addItem((width), (height), barcode)
         if not fits:
@@ -46,6 +49,12 @@ class WareHouse:
 
     def itemLocation(self, barcode):
         return self.p.itemLoc(barcode)
+
+    def barExists(self, barcode):
+        for item in self.items:
+            if barcode == item.barcode:
+                return True
+        return False
 
 
     def displayMatrix(self):
