@@ -31,7 +31,8 @@ class warehouseTree:
                 #       The left child node should be width = original.width.... height = original.height - new.height
     def addItem(self, width, height, barcode):
         # print("addint item...")
-        
+        #width=int(width)
+        #height=int(height)
         tempAndCoords = self.findSpace(width, height, self.root, 0, 0)
         if not tempAndCoords:
             return False
@@ -51,11 +52,13 @@ class warehouseTree:
         
         # make right and left child nodes, and make temp point to them
         #   only if they have legitimate space available
-        rightChild = Node(originalWidth-temp.width, temp.height)
+        
+        #print("ow type",str(type(originalWidth)) ,"tempwidth ",str(type(temp.width)))
+        rightChild = Node((originalWidth)-(temp.width), (temp.height))
         if rightChild.height > 0 and rightChild.width > 0:
             temp.right = rightChild
 
-        leftChild = Node(originalWidth, originalHeight-temp.height)
+        leftChild = Node((originalWidth), (originalHeight)-(temp.height))
         if leftChild.height > 0 and leftChild.width > 0:
             temp.left = leftChild
 
@@ -106,7 +109,7 @@ class warehouseTree:
         rightFound = False
         leftFound = False
         if temp.barcode == barcode:
-            return (temp.x, temp.y, temp.width, temp.height, temp.barcode)
+            return (temp.x,temp.y,temp.width+temp.x, temp.height+temp.y,   temp.barcode)
         if temp.right:
             rightFound = self.findCoords(barcode, temp.right, x+temp.width, y)
         if temp.left:
