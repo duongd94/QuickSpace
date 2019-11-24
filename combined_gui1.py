@@ -10,14 +10,11 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import items
 from tkinter import Canvas
+import json
 
 def run_gui():
     app = warehouseApp()
     app.mainloop()
-
-wh=[]
-
-
 
 class warehouseApp(tk.Tk):
     # Frame change reference https://pythonprogramming.net/change-show-new-frame-tkinter/
@@ -88,6 +85,7 @@ class warehouseInfo(tk.Frame):
     warehouse=None
     wareHeight=0
     wareWidth=0
+    updateFlag = False
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -104,12 +102,21 @@ class warehouseInfo(tk.Frame):
         controller.configure(highlightcolor="black")
 
         def getitem():
+            warehouseInfo.updateFlag = True
+            warehouseSelected = str(variable.get())
+            if warehouseSelected == 'Select Warehouse':
+                height=int(float(self.lengthEntry.get()))
+                width=int(float(self.widthEntry.get()))
+                name=str(self.nameEntry.get())
+                warehouseInfo.warehouse=items.WareHouse(height,width,name)
+                warehouseInfo.warehouse.saveWarehouse()
+                loadNames()
+            else:
+                warehouseInfo.warehouse=items.WareHouse(1,1,'name')
+                warehouseInfo.warehouse.loadNewWarehouse(warehouseSelected)
             controller.show_frame("menu")
-            height=int(float(self.lengthEntry.get()))
-            width=int(float(self.widthEntry.get()))
-            wh.append(height)
-            wh.append(width)
-            warehouseInfo.warehouse=items.WareHouse(height,width)
+            
+            
 
         self.infoLabel = tk.Label(self)
         self.infoLabel.place(x=20, y=90, height=36, width=455) #ORIGINAL LOCATION: y=60
@@ -117,28 +124,48 @@ class warehouseInfo(tk.Frame):
         self.infoLabel.configure(foreground="#000000")
         self.infoLabel.configure(highlightbackground="#d9d9d9")
         self.infoLabel.configure(highlightcolor="black")
-        self.infoLabel.configure(text='''Please enter the dimensions of the warehouse (ft.):''')
+        self.infoLabel.configure(text='''Please enter dimensions and name of the warehouse:''')
+
+        self.nameLabel = tk.Label(self)
+        self.nameLabel.place(x=60, y=188, height=34, width=70) #ORIGINAL LOCATION: x=50, y=135
+        self.nameLabel.configure(anchor='e')
+        self.nameLabel.configure(font="-family {Segoe UI} -size 12")
+        self.nameLabel.configure(foreground="#000000")
+        self.nameLabel.configure(highlightbackground="#d9d9d9")
+        self.nameLabel.configure(highlightcolor="black")
+        self.nameLabel.configure(text='''Name:''')
 
         self.lengthLabel = tk.Label(self)
-        self.lengthLabel.place(x=50, y=202, height=34, width=70) #ORIGINAL LOCATION: x=50, y=135
+        self.lengthLabel.place(x=65, y=248, height=34, width=79) #ORIGINAL LOCATION: x=50, y=135
         self.lengthLabel.configure(anchor='e')
         self.lengthLabel.configure(font="-family {Segoe UI} -size 12")
         self.lengthLabel.configure(foreground="#000000")
         self.lengthLabel.configure(highlightbackground="#d9d9d9")
         self.lengthLabel.configure(highlightcolor="black")
-        self.lengthLabel.configure(text='''Length:''')
+        self.lengthLabel.configure(text='''Length (ft.):''')
 
         self.widthLabel = tk.Label(self)
-        self.widthLabel.place(x=50, y=308, height=34, width=69) #ORIGINAL LOCATION: x=50, y=245
+        self.widthLabel.place(x=65, y=308, height=34, width=76) #ORIGINAL LOCATION: x=50, y=245
         self.widthLabel.configure(anchor='e')
         self.widthLabel.configure(font="-family {Segoe UI} -size 12")
         self.widthLabel.configure(foreground="#000000")
         self.widthLabel.configure(highlightbackground="#d9d9d9")
         self.widthLabel.configure(highlightcolor="black")
-        self.widthLabel.configure(text='''Width:''')
+        self.widthLabel.configure(text='''Width (ft.):''')
+
+        self.nameEntry = tk.Entry(self)
+        self.nameEntry.place(x=150, y=195, height=24, width=270) #ORIGINAL LOCATION: x=150, y=140
+        self.nameEntry.configure(background="white")
+        self.nameEntry.configure(font="-family {Courier New} -size 11")
+        self.nameEntry.configure(foreground="#000000")
+        self.nameEntry.configure(highlightbackground="#d9d9d9")
+        self.nameEntry.configure(highlightcolor="black")
+        self.nameEntry.configure(insertbackground="black")
+        self.nameEntry.configure(selectbackground="#c4c4c4")
+        self.nameEntry.configure(selectforeground="black")
 
         self.lengthEntry = tk.Entry(self)
-        self.lengthEntry.place(x=150, y=207, height=24, width=270) #ORIGINAL LOCATION: x=150, y=140
+        self.lengthEntry.place(x=150, y=255, height=24, width=270) #ORIGINAL LOCATION: x=150, y=140
         self.lengthEntry.configure(background="white")
         self.lengthEntry.configure(font="-family {Courier New} -size 11")
         self.lengthEntry.configure(foreground="#000000")
@@ -149,7 +176,7 @@ class warehouseInfo(tk.Frame):
         self.lengthEntry.configure(selectforeground="black")
 
         self.widthEntry = tk.Entry(self)
-        self.widthEntry.place(x=150, y=313, height=24, width=270) #ORIGINAL LOCATION: x=150, y=250
+        self.widthEntry.place(x=150, y=315, height=24, width=270) #ORIGINAL LOCATION: x=150, y=250
         self.widthEntry.configure(background="white")
         self.widthEntry.configure(disabledforeground="#a3a3a3")
         self.widthEntry.configure(font="-family {Courier New} -size 11")
@@ -161,7 +188,7 @@ class warehouseInfo(tk.Frame):
         self.widthEntry.configure(selectforeground="black")
 
         self.submitButton = tk.Button(self)
-        self.submitButton.place(x=200, y=400, height=33, width=79) #ORIGINAL LOCATION: x=200, y=420 ;; x=200, y=535
+        self.submitButton.place(x=190, y=480, height=33, width=79) #ORIGINAL LOCATION: x=200, y=420 ;; x=200, y=535
         self.submitButton.configure(activebackground="#ececec")
         self.submitButton.configure(activeforeground="#000000")
         self.submitButton.configure(background="#d9d9d9")
@@ -173,6 +200,31 @@ class warehouseInfo(tk.Frame):
         self.submitButton.configure(text='''Submit''')
         self.submitButton.configure(command=getitem)
         #elf.submitButton.configure(command=lambda: controller.show_frame("menu"))
+
+        self.orLabel = tk.Label(self)
+        self.orLabel.place(x=98, y=360, height=34, width=200) #ORIGINAL LOCATION: x=50, y=245
+        self.orLabel.configure(anchor='e')
+        self.orLabel.configure(font="-family {Segoe UI} -size 12")
+        self.orLabel.configure(foreground="#000000")
+        self.orLabel.configure(highlightbackground="#d9d9d9")
+        self.orLabel.configure(highlightcolor="black")
+        self.orLabel.configure(text='''Or load Warehouse''')
+
+        # get warehouseNames
+        with open('data.json') as json_file:
+            names = [
+                'Select Warehouse'
+            ]
+            data = json.load(json_file)
+            for d in data:
+                names.append(d['warehouseName'])
+            variable = tk.StringVar(self)
+            variable.set(names[0]) # default value
+            w = tk.OptionMenu(self, variable, *names)
+            w.place(x=120, y=390, height=33, width=200)
+            def loadNames():
+                w['menu'].add_command(label=warehouseInfo.warehouse.warehouseName, command=tk._setit(variable, warehouseInfo.warehouse.warehouseName))
+
 
 
 class menu(tk.Frame):
@@ -192,23 +244,7 @@ class menu(tk.Frame):
         controller.configure(highlightcolor="black")
         
         def view1():
-            #warehouseInfo.warehouse.displayMatrix()
-    
-            # master = tk.Tk()
-            # canvas_width = wh[0]
-            # canvas_height = wh[1]
-            # print("Total Space :",warehouseInfo.warehouse.totalSpace())
-            # print("Used Space :",warehouseInfo.warehouse.usedSpace())
-            # print("Remaning Space :",warehouseInfo.warehouse.remainingSpace())
-            # w = Canvas(master, 
-            #             width=canvas_width,
-            #             height=canvas_height,bg='red')
             controller.show_frame("viewWarehouse")
-
-            # for item in warehouseInfo.warehouse.items:
-            #     loc=list(warehouseInfo.warehouse.itemLocation(item.barcode))
-            #     w.create_rectangle(loc[0], loc[1], loc[2], loc[3], fill="blue")
-            # w.pack()
 
         self.menuLabel = tk.Label(self)
         self.menuLabel.place(relx=0.313, rely=0.067, height=95, width=177)
@@ -219,7 +255,7 @@ class menu(tk.Frame):
         self.menuLabel.configure(text='''Menu''')
 
         self.addButton = tk.Button(self)
-        self.addButton.place(relx=0.354, rely=0.333, height=52, width=150)
+        self.addButton.place(relx=0.354, rely=0.33, height=52, width=150)
         self.addButton.configure(activebackground="#ececec")
         self.addButton.configure(activeforeground="#000000")
         self.addButton.configure(background="#d9d9d9")
@@ -235,7 +271,7 @@ class menu(tk.Frame):
         
 
         self.viewButton = tk.Button(self)
-        self.viewButton.place(relx=0.354, rely=0.517, height=52, width=150)
+        self.viewButton.place(relx=0.354, rely=0.45, height=52, width=150)
         self.viewButton.configure(activebackground="#ececec")
         self.viewButton.configure(activeforeground="#000000")
         self.viewButton.configure(background="#d9d9d9")
@@ -249,8 +285,22 @@ class menu(tk.Frame):
         self.viewButton.configure(command=view1)
         #self.viewButton.configure(command=lambda: controller.show_frame("viewWarehouse"))
 
+        self.addButton = tk.Button(self)
+        self.addButton.place(relx=0.24, rely=0.69, height=52, width=250)
+        self.addButton.configure(activebackground="#ececec")
+        self.addButton.configure(activeforeground="#000000")
+        self.addButton.configure(background="#d9d9d9")
+        self.addButton.configure(disabledforeground="#a3a3a3")
+        self.addButton.configure(font="-family {Segoe UI} -size 11")
+        self.addButton.configure(foreground="#000000")
+        self.addButton.configure(highlightbackground="#d9d9d9")
+        self.addButton.configure(highlightcolor="black")
+        self.addButton.configure(pady="0")
+        self.addButton.configure(text='''Load another warehouse''')
+        self.addButton.configure(command=lambda: controller.show_frame("warehouseInfo"))
+
         self.exitButton = tk.Button(self)
-        self.exitButton.place(relx=0.354, rely=0.7, height=52, width=150)
+        self.exitButton.place(relx=0.354, rely=0.57, height=52, width=150)
         self.exitButton.configure(activebackground="#ececec")
         self.exitButton.configure(activeforeground="#000000")
         self.exitButton.configure(background="#d9d9d9")
@@ -282,21 +332,14 @@ class addItem(tk.Frame):
         
         def additem1():
             
-
+            warehouseInfo.updateFlag = True
             ilength=int(float(self.Entry1.get()))
             iwidth=int(float(self.Entry2.get()))
             iname=self.nameEntry.get()
-            #(barcode, item_name, width, height, amount,price , owner_name)
-            #warehouseInfo.warehouse.addItem(iname, "iname", iwidth, ilength, 5 ,5,"owner_name")
-            # if iname in ob:
-                # print("failed cause name already exists")
-                # controller.show_frame("addItemFail1")
+
             if warehouseInfo.warehouse.addItem(iname, iwidth, ilength):
-                print("item added successfully")
-                # ob.append(iname)
                 controller.show_frame("addItemSuccess")
             else:
-                print("failed cause no fit")
                 controller.show_frame("addItemFail")
             
 
@@ -583,8 +626,7 @@ class addItemFail1(tk.Frame):
         self.okButton.configure(command=lambda: controller.show_frame("menu"))
 
 class viewWarehouse(tk.Frame):
-    
-    
+
     def __init__(self, parent, controller):
         
         tk.Frame.__init__(self, parent)
@@ -600,10 +642,6 @@ class viewWarehouse(tk.Frame):
         controller.configure(background="#d9d9d9")
         controller.configure(highlightbackground="#d9d9d9")
         controller.configure(highlightcolor="black")
-        
-        
-
-        
 
         self.itemsLabel = tk.Label(self)
         self.itemsLabel.place(relx=0.167, rely=0.031, height=56, width=331)
@@ -650,12 +688,6 @@ class viewWarehouse(tk.Frame):
         self.okButton.configure(text='''OK''')
         self.okButton.configure(command=lambda: controller.show_frame("menu"))
 
-
-        
-
-
-
-
         # Create a frame for the canvas and scrollbar(s).
         frame2 = tk.Frame(self)
         # frame2.grid(row=4, column=3, sticky=tk.NW)
@@ -701,16 +733,17 @@ class viewWarehouse(tk.Frame):
         # Define the scrollable region as entire canvas with only the desired
         dw, dh = 400, 180
         canvas.configure(scrollregion=bbox, width=dw, height=dh)
+        
+        
+        frame=tk.Frame(self,width=400,height=180)
 
-
-
-
-
+        frame.place(x=30, y=320)
 
         self.counter = 0
         # refreshed the viewWarehouse. Maybe there is a better way to do this?
         def refreshItems():
-            if wh:
+            if warehouseInfo.updateFlag:
+                warehouseInfo.updateFlag = False
                 # updates the space remaining and used
                 spaceRemStr = "Total Space Remaining: "
                 spaceRemStr += str(warehouseInfo.warehouse.remainingSpace())
@@ -723,11 +756,10 @@ class viewWarehouse(tk.Frame):
             
                 # following updates the items
                 i = 2
-                frame=tk.Frame(self,width=400,height=180)
+                # get rid of the previous items in the warehouse
+                for widget1 in frame.winfo_children():
+                    widget1.destroy()
 
-                frame.place(x=30, y=320)
-                # frame.grid(row=0,column=0)
-                print(warehouseInfo.warehouse.width, " ", warehouseInfo.warehouse.height)
                 w=tk.Canvas(frame,bg='red',width=warehouseInfo.warehouse.width,height=warehouseInfo.warehouse.height,scrollregion=(0,0,warehouseInfo.warehouse.width,warehouseInfo.warehouse.height))
                 hbar=tk.Scrollbar(frame,orient=tk.HORIZONTAL)
                 hbar.pack(side=tk.BOTTOM,fill=tk.X)
@@ -777,16 +809,12 @@ class viewWarehouse(tk.Frame):
             # Define the scrollable region as entire canvas with only the desired
                 dw, dh = 400, 180
                 canvas.configure(scrollregion=bbox, width=dw, height=dh)
-        #     clock()
-        # def clock():
-        #     # time = datetime.datetime.now().strftime("Time: %H:%M:%S")
-        #     # lab.config(text=time)
-        #     #lab['text'] = time
-        #     self.after(5000, refreshItems) # run itself again after 1000 ms
-        # # Create a frame for the canvas and scrollbar(s).
-        # # frame3 = tk.Frame(self)
-        # # frame3.place(x=30, y=90, height=200, width=450)
-        # clock()
+            clock()
+
+        def clock():
+            self.after(500, refreshItems) # run itself again after 1000 ms
+
+        clock()
 
         self.addButton = tk.Button(self)#0.438
         self.addButton.place(relx=0.75, rely=0.456, height=22, width=70)
@@ -802,7 +830,6 @@ class viewWarehouse(tk.Frame):
         self.addButton.configure(text='''Refresh''')
         self.addButton.configure(command=refreshItems)
 
-        # Draw warehouse diagram here
 
 
 if __name__ == '__main__':

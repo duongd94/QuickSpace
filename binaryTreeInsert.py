@@ -70,6 +70,12 @@ class warehouseTree:
         temp.y = coords[1]
         return True
         
+    # When calling this, input the new width and height of the new warehouse.
+        # Items will have to be loaded in again in the order they were loaded in before
+    def loadNewWarehouse(self, width, height):
+        self.root = Node(width, height)
+        self.height = height
+        self.width = width
 
 
     def findSpace(self, width, height, temp, x, y):
