@@ -65,51 +65,52 @@ class WareHouse:
     
     def saveWarehouse(self):
         items = []
-        for i in self.items:
-            items.append({
-                'name': i.name,
-                'barcode': i.barcode,
-                'width': i.width,
-                'height': i.height
-            })
-        warehouseData = {
-            'warehouseName': self.warehouseName,
-            'width': self.width,
-            'height': self.height,
-            'items': items
-        }
-        loc = -1
-        with open('data.json') as json_file:
-            data = json.load(json_file)
-            iter = -1
-            for war in data:
-                iter += 1
-                if war['warehouseName'] == warehouseData['warehouseName']:
-                    loc = iter
-            if loc >= 0:
-                data[loc] = warehouseData
-            else:
-                data.append(warehouseData)
-            with open('data.json', 'w') as outfile:
-                json.dump(data, outfile)
+        # for i in self.items:
+        #     items.append({
+        #         'name': i.name,
+        #         'barcode': i.barcode,
+        #         'width': i.width,
+        #         'height': i.height
+        #     })
+        # warehouseData = {
+        #     'warehouseName': self.warehouseName,
+        #     'width': self.width,
+        #     'height': self.height,
+        #     'items': items
+        # }
+        # loc = -1
+        # with open('data.json') as json_file:
+        #     data = json.load(json_file)
+        #     iter = -1
+        #     for war in data:
+        #         iter += 1
+        #         if war['warehouseName'] == warehouseData['warehouseName']:
+        #             loc = iter
+        #     if loc >= 0:
+        #         data[loc] = warehouseData
+        #     else:
+        #         data.append(warehouseData)
+        #     with open('data.json', 'w') as outfile:
+        #         json.dump(data, outfile)
     
     # will set the warehouse to the new width and height. Then load the items into the warehouse
     def loadNewWarehouse(self, warehouseId):
-        with open('data.json') as json_file:
-            data = json.load(json_file)
-            # print(data)
-            warehouseData = {}
-            for p in data:
-                if p['warehouseName'] == warehouseId:
-                    warehouseData = p
-            if warehouseData:
-                self.p.loadNewWarehouse(warehouseData['width'], warehouseData['height'])
-                self.width = warehouseData['width']
-                self.height = warehouseData['height']
-                self.items = []
-                self.warehouseName = warehouseId
-                for items in warehouseData['items']:
-                    self.addItem(items['name'], items['width'], items['height'], barcode=items['barcode'])
+        print("s")
+        # with open('data.json') as json_file:
+        #     data = json.load(json_file)
+        #     # print(data)
+        #     warehouseData = {}
+        #     for p in data:
+        #         if p['warehouseName'] == warehouseId:
+        #             warehouseData = p
+        #     if warehouseData:
+        #         self.p.loadNewWarehouse(warehouseData['width'], warehouseData['height'])
+        #         self.width = warehouseData['width']
+        #         self.height = warehouseData['height']
+        #         self.items = []
+        #         self.warehouseName = warehouseId
+        #         for items in warehouseData['items']:
+        #             self.addItem(items['name'], items['width'], items['height'], barcode=items['barcode'])
 
         # self.width = width
         # self.height = height
