@@ -7,35 +7,36 @@ Created on Mon Oct 28 17:46:59 2019
 
 from datetime import date
 import random
-from copy import copy, deepcopy
 import binaryTreeInsert
-import random
 import json
 
 
 class WareHouse:
+    """initialize warehouse"""
     def __init__(self, height, width, name):
         self.width = width
         self.height = height
         self.items = []
         self.p = binaryTreeInsert.warehouseTree(width, height)
         self.warehouseName = name
-    
+
     def totalSpace(self):
+        """return total space"""
         return self.width*self.height
 
     def usedSpace(self):
+        """reutrn total used space"""
         space = 0
         for item in self.items:
             space += item.width * item.height
         return space
 
     def remainingSpace(self):
+        """return remaining space"""
         return self.totalSpace() - self.usedSpace()
-        
 
-
-    def addItem(self, name, width,height, amount="", price="", owner_name="", barcode="" ):
+    def addItem(self, name, width, height, amount="", price="", owner_name="", barcode=""):
+        """add item to warehouse"""
         if barcode == "":
             barcode = random.randint(100000000, 999999999)
             while self.barExists(barcode):
@@ -46,8 +47,8 @@ class WareHouse:
             return False
         else:
             locations = self.itemLocation(barcode)
-            self.items.append(Item(barcode, name, width,
-                height, amount, price, owner_name, locations))
+            self.items.append(Item(barcode, name, width, height, amount,
+                                   price, owner_name, locations))
             self.saveWarehouse()
             return True
 
@@ -59,10 +60,9 @@ class WareHouse:
             if barcode == item.barcode:
                 return True
         return False
-    
+
     # def warehouseNames(self):
-        
-    
+
     def saveWarehouse(self):
         items = []
         for i in self.items:
@@ -82,9 +82,9 @@ class WareHouse:
         with open('data.json') as json_file:
             data = json.load(json_file)
             iter = -1
-            for war in data:
+            for ware in data:
                 iter += 1
-                if war['warehouseName'] == warehouseData['warehouseName']:
+                if ware['warehouseName'] == warehouseData['warehouseName']:
                     loc = iter
             if loc >= 0:
                 data[loc] = warehouseData
@@ -92,7 +92,7 @@ class WareHouse:
                 data.append(warehouseData)
             with open('data.json', 'w') as outfile:
                 json.dump(data, outfile)
-    
+
     # will set the warehouse to the new width and height. Then load the items into the warehouse
     def loadNewWarehouse(self, warehouseId):
         with open('data.json') as json_file:
@@ -109,14 +109,13 @@ class WareHouse:
                 self.items = []
                 self.warehouseName = warehouseId
                 for items in warehouseData['items']:
-                    self.addItem(items['name'], items['width'], items['height'], barcode=items['barcode'])
+                    self.addItem(items['name'], items['width'],
+                                 items['height'], barcode=items['barcode'])
 
         # self.width = width
         # self.height = height
         # self.items = []
         # self.p = binaryTreeInsert.warehouseTree(width, height)
-
-
 
     def displayMatrix(self):
         self.p.printWarehouseMatrix()
@@ -148,8 +147,8 @@ class WareHouse:
                 item.checkin()
 
 class Item:
-    def __init__(self, barcode, name, width,
-                height, amount, price, owner_name, locations):
+    def __init__(self, barcode, name, width, height, amount, price, owner_name, locations):
+
         self.barcode = barcode
         self.name = name
         self.width = width
@@ -172,55 +171,6 @@ class Item:
 # x.addItem('paper', 4, 5)
 # x.displayMatrix()
 
-
 # x.saveWarehouse()
 # x.loadNewWarehouse('warehouse11')
 # x.displayMatrix()
-
-'''
-# addItem(width, height, barcode)
-# fits                                  #(barcode, item_name, width, height, amount,price , owner_name)
-print("Was the item placed?: ", x.addItem('d'    , "Disc"   , 3    , 5     , 1     , 20.11, "Jonathan" ))
-print("Was the item placed?: ", x.addItem( 2, "Another Disc", 3, 30, 1, 49.99, "JonathanB" ))
-print("Was the item placed?: ", x.addItem(3    , "Mouse", 3, 5, 1, 29.99, "Jonathan"))
-print("Was the item placed?: ", x.addItem(4    , "Keyboard", 3, 5, 1, 39.99, "Jonathan"))
-
-# Item does not fit 
-print("Was the item placed?: ", x.addItem(9, "", 30, 50,1, 99999, "people"))
-
-# checking out item with barcode 'd'
-x.checkoutItem('d')
-print(x.items[0].date_out)
-
-# checking in item with barcode 'd'
-x.checkinItem('d')
-print(x.items[0].date_in)
-
-# get the totalspace, usedspace, and remaining space of warehouse
-print(x.totalSpace(), x.usedSpace(), x.remainingSpace())
-
-# get location of an item in warehouse, using barcode
-print("Location of item with barcode 'd': ",x.itemLocation('d'))
-print("Location of item with barcode 2: ",x.itemLocation(2))
-print("Location of item with barcode 4: ",x.itemLocation(4))
-print("Location of item with barcode 9: ",x.itemLocation(9))
-
-# gives the list of all item rectangles
-# print(x.p.rect_list())
-
-# display warehouse
-x.displayMatrix()
-
-
-# x = binaryTreeInsert.warehouseTree(25, 50)
-# x.addItem(10, 20, 1)
-# x.printNodes()
-# x.addItem(5, 5, 2)
-# # x.addItem(5, 5, 3)
-# x.addItem(5, 5, 4)
-# x.addItem(20, 200, 9)
-# # x.addItem(20, 30, 5)
-# x.addItem(30, 5, 6)
-# x.printWarehouseMatrix()
-
-'''
