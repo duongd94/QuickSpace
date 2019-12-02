@@ -12,7 +12,7 @@ python combined_gui1.py
 
 ### Unit Testing
 File test_warehouse.py has all unit test currently.
-##### To run 
+#### To run 
 ```ssh 
 python test_warehouse.py
 ```
