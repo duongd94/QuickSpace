@@ -12,7 +12,7 @@ import binaryTreeInsert
 import random
 import json
 
-
+(300, 300, "warehouse")
 class WareHouse:
     def __init__(self, height, width, name):
         self.width = width
@@ -33,7 +33,6 @@ class WareHouse:
     def remainingSpace(self):
         return self.totalSpace() - self.usedSpace()
         
-
 
     def addItem(self, name, width,height, amount="", price="", owner_name="", barcode="" ):
         if barcode == "":
@@ -64,7 +63,8 @@ class WareHouse:
         
     
     def saveWarehouse(self):
-        items = []
+        print("not supported on this branch")
+        # items = []
         # for i in self.items:
         #     items.append({
         #         'name': i.name,
