@@ -102,23 +102,18 @@ class warehouseInfo(tk.Frame):
         controller.configure(highlightcolor="black")
 
         def getitem():
-            
-            height=int(float(self.lengthEntry.get()))
-            width=int(float(self.widthEntry.get()))
-            name="asdlaksd"
-            warehouseInfo.warehouse=items.WareHouse(height,width,name)
             warehouseInfo.updateFlag = True
-            # warehouseSelected = str(variable.get())
-            # if warehouseSelected == 'Select Warehouse':
-            #     height=int(float(self.lengthEntry.get()))
-            #     width=int(float(self.widthEntry.get()))
-            #     name=str(self.nameEntry.get())
-            #     warehouseInfo.warehouse=items.WareHouse(height,width,name)
-            #     warehouseInfo.warehouse.saveWarehouse()
-            #     # loadNames()
-            # else:
-            #     warehouseInfo.warehouse=items.WareHouse(1,1,'name')
-            #     warehouseInfo.warehouse.loadNewWarehouse(warehouseSelected)
+            warehouseSelected = str(variable.get())
+            if warehouseSelected == 'Select Warehouse':
+                height=int(float(self.lengthEntry.get()))
+                width=int(float(self.widthEntry.get()))
+                name=str(self.nameEntry.get())
+                warehouseInfo.warehouse=items.WareHouse(height,width,name)
+                warehouseInfo.warehouse.saveWarehouse()
+                loadNames()
+            else:
+                warehouseInfo.warehouse=items.WareHouse(1,1,'name')
+                warehouseInfo.warehouse.loadNewWarehouse(warehouseSelected)
             controller.show_frame("menu")
             
             
@@ -216,19 +211,19 @@ class warehouseInfo(tk.Frame):
         self.orLabel.configure(text='''Or load Warehouse''')
 
         # get warehouseNames
-        # with open('data.json') as json_file:
-        #     names = [
-        #         'Select Warehouse'
-        #     ]
-        #     data = json.load(json_file)
-        #     for d in data:
-        #         names.append(d['warehouseName'])
-        #     variable = tk.StringVar(self)
-        #     variable.set(names[0]) # default value
-        #     w = tk.OptionMenu(self, variable, *names)
-        #     w.place(x=120, y=390, height=33, width=200)
-        #     def loadNames():
-        #         w['menu'].add_command(label=warehouseInfo.warehouse.warehouseName, command=tk._setit(variable, warehouseInfo.warehouse.warehouseName))
+        with open('data.json') as json_file:
+            names = [
+                'Select Warehouse'
+            ]
+            data = json.load(json_file)
+            for d in data:
+                names.append(d['warehouseName'])
+            variable = tk.StringVar(self)
+            variable.set(names[0]) # default value
+            w = tk.OptionMenu(self, variable, *names)
+            w.place(x=120, y=390, height=33, width=200)
+            def loadNames():
+                w['menu'].add_command(label=warehouseInfo.warehouse.warehouseName, command=tk._setit(variable, warehouseInfo.warehouse.warehouseName))
 
 
 

@@ -40,7 +40,7 @@ class TestItems(unittest.TestCase):
         #Assume
         width = 10
         height = 30
-        name = "testing warehouse item add"
+        name = "testing warehouse Remaining & Used Space"
         warehouse = items.WareHouse(height, width, name)
         itemWidths = [5, 10, 5]
         itemHeight = [10, 15, 5]
