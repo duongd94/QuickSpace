@@ -4,6 +4,10 @@ Quick Space is a simple project which illustrates binpacking algorithm. User can
 into the inventory and the system places the rectangle starting from top-right corner. Remaining area and Used area is calculated
 everytime when there is an insertion of objects.
 
+## To Run 
+```ssh
+python combined_gui1.py
+```
 ## Testing
 
 ### Unit Testing
