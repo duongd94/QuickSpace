@@ -4,7 +4,8 @@ Created on Wed Oct 30 15:19:32 2019
 
 @author: aksha
 """
-
+import os
+from pathlib import Path
 import sys
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -211,7 +212,8 @@ class warehouseInfo(tk.Frame):
         self.orLabel.configure(text='''Or load Warehouse''')
 
         # get warehouseNames
-        with open('data.json') as json_file:
+        fileLoc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data.json')
+        with open(fileLoc) as json_file:
             names = [
                 'Select Warehouse'
             ]

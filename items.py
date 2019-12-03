@@ -4,7 +4,8 @@ Created on Mon Oct 28 17:46:59 2019
 
 @author: aksha
 """
-
+import os
+from pathlib import Path
 from datetime import date
 import random
 import binaryTreeInsert
@@ -64,6 +65,8 @@ class WareHouse:
     # def warehouseNames(self):
 
     def saveWarehouse(self):
+        fileLoc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data.json')
+
         items = []
         for i in self.items:
             items.append({
@@ -79,7 +82,7 @@ class WareHouse:
             'items': items
         }
         loc = -1
-        with open('./data.json') as json_file:
+        with open(fileLoc) as json_file:
             data = json.load(json_file)
             iter = -1
             for ware in data:
@@ -90,12 +93,13 @@ class WareHouse:
                 data[loc] = warehouseData
             else:
                 data.append(warehouseData)
-            with open('./data.json', 'w') as outfile:
+            with open(fileLoc, 'w') as outfile:
                 json.dump(data, outfile)
 
     # will set the warehouse to the new width and height. Then load the items into the warehouse
     def loadNewWarehouse(self, warehouseId):
-        with open('./data.json') as json_file:
+        fileLoc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data.json')
+        with open(fileLoc) as json_file:
             data = json.load(json_file)
             # print(data)
             warehouseData = {}
@@ -145,6 +149,9 @@ class Item:
     def checkin(self):
         self.date_in = date.today()
 
+
+B = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data.json')
+print(B)
 # make a warehouse, warehousePacker(width, height)
 
 # x = WareHouse(50, 30, 'warehouse121')

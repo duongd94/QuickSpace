@@ -1,6 +1,4 @@
-import sys
 import unittest
-sys.path.insert(1, '../')
 import items
 
 class TestItems(unittest.TestCase):
